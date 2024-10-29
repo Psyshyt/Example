@@ -3,22 +3,21 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    public bool GroundCheck;
-
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private float _moveSpeed = 5f;
-    [SerializeField] private float _rotationSpeed = 200f;
+    [SerializeField] private float _rotationSpeed = 100f;
     [SerializeField] private float _jumpForce = 5f; 
-    private Rigidbody _rigidbody;
+    private float _cameraPitch = 0f;
 
+    private Rigidbody _rigidbody;
     private Vector2 _moveInput;
     private Vector2 _lookInput;
     private bool _isJumping;
-
-    private float _cameraPitch = 0f;
+    public bool GroundCheck;
 
     private void Awake()
-    {
+    {   
+        Cursor.visible = false;
         _rigidbody = GetComponent<Rigidbody>();
     }
 
@@ -46,6 +45,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void OnLeftButton(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            LeftButton();
+        }
+    }
+
     private void Move()
     {
         Vector3 forwardMovement = transform.forward * _moveInput.y * _moveSpeed * Time.deltaTime;
@@ -67,6 +74,20 @@ public class PlayerController : MonoBehaviour
     {
         _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
         GroundCheck = false; 
+    }
+
+    private void LeftButton()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue()); 
+        if (Physics.Raycast(ray, out RaycastHit hit, 100f)) 
+        {
+            Debug.Log("Hit: " + hit.collider.name); 
+            
+            // if (hit.collider.CompareTag("Interactable")) // Проверка тега объекта
+            // {
+
+            // }
+        }
     }
 
     private void OnCollisionEnter(Collision collision)

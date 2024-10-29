@@ -53,6 +53,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LBM"",
+                    ""type"": ""Button"",
+                    ""id"": ""bf52599f-fe82-4046-bbc7-d39c1bc1ee66"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -132,6 +141,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b2252d06-a266-45c2-a903-f6363870e8b2"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""LBM"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -160,6 +180,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_RotationCamera = m_Player.FindAction("RotationCamera", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
+        m_Player_LBM = m_Player.FindAction("LBM", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -229,6 +250,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_RotationCamera;
     private readonly InputAction m_Player_Jump;
+    private readonly InputAction m_Player_LBM;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -236,6 +258,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @RotationCamera => m_Wrapper.m_Player_RotationCamera;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
+        public InputAction @LBM => m_Wrapper.m_Player_LBM;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -254,6 +277,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
+            @LBM.started += instance.OnLBM;
+            @LBM.performed += instance.OnLBM;
+            @LBM.canceled += instance.OnLBM;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -267,6 +293,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
+            @LBM.started -= instance.OnLBM;
+            @LBM.performed -= instance.OnLBM;
+            @LBM.canceled -= instance.OnLBM;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -298,5 +327,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnRotationCamera(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnLBM(InputAction.CallbackContext context);
     }
 }
