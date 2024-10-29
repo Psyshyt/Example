@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Terrain
   - Ground
+  - Button
+  - Obstacle
   layers:
   - Default
   - TransparentFX

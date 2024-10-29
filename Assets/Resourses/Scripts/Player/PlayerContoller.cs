@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -17,19 +18,26 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {   
+        Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         _rigidbody = GetComponent<Rigidbody>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
+        if (_rigidbody.velocity.magnitude > _moveSpeed)
+        {
+            _rigidbody.velocity = _rigidbody.velocity.normalized * _moveSpeed;
+        }
+        
         Move();
+        
         Rotate();
     }
 
     public void OnMove(InputAction.CallbackContext context)
     {
-        _moveInput = context.ReadValue<Vector2>();
+        _moveInput = context.ReadValue<Vector2>(); 
     }
 
     public void OnLook(InputAction.CallbackContext context)
@@ -54,11 +62,26 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Move()
+{
+    // Получаем движение на основе ввода
+    Vector3 forwardMovement = transform.forward * _moveInput.y * _moveSpeed;
+    Vector3 strafeMovement = transform.right * _moveInput.x * _moveSpeed;
+
+    // Комбинируем движения
+    Vector3 movement = forwardMovement + strafeMovement;
+
+    // Устанавливаем скорость Rigidbody
+    if (GroundCheck)
     {
-        Vector3 forwardMovement = transform.forward * _moveInput.y * _moveSpeed * Time.deltaTime;
-        Vector3 strafeMovement = transform.right * _moveInput.x * _moveSpeed * Time.deltaTime;
-        transform.position += forwardMovement + strafeMovement;
+        _rigidbody.velocity = new Vector3(movement.x, _rigidbody.velocity.y, movement.z); // Сохраняем вертикальную скорость
     }
+    else
+    {
+        // В воздухе, мы можем уменьшить скорость
+        _rigidbody.velocity = new Vector3(movement.x * 0.5f, _rigidbody.velocity.y, movement.z * 0.5f); // Уменьшаем скорость в воздухе
+    }
+}
+
 
     private void Rotate()
     {
@@ -66,22 +89,28 @@ public class PlayerController : MonoBehaviour
         transform.Rotate(0, yaw, 0);
 
         _cameraPitch -= _lookInput.y * _rotationSpeed * Time.deltaTime;
-        _cameraPitch = Mathf.Clamp(_cameraPitch, -45f, 45f);
+        _cameraPitch = Mathf.Clamp(_cameraPitch, -75f, 75f);
         cameraTransform.localEulerAngles = new Vector3(_cameraPitch, 0, 0);
     }
 
-    private void Jump()
+   private void Jump()
     {
-        _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+       
+        _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, _jumpForce, _rigidbody.velocity.z);
         GroundCheck = false; 
     }
+
 
     private void LeftButton()
     {
         Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue()); 
         if (Physics.Raycast(ray, out RaycastHit hit, 100f)) 
         {
-            Debug.Log("Hit: " + hit.collider.name); 
+            Button button = hit.collider.GetComponent<Button>(); 
+            if (button != null)
+            {
+                button.onClick.Invoke();
+            } 
         }
     }
 
@@ -92,4 +121,7 @@ public class PlayerController : MonoBehaviour
             GroundCheck = true; 
         }
     }
+
+        
+        
 }
