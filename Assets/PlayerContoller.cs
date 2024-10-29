@@ -82,11 +82,6 @@ public class PlayerController : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit, 100f)) 
         {
             Debug.Log("Hit: " + hit.collider.name); 
-            
-            // if (hit.collider.CompareTag("Interactable")) // Проверка тега объекта
-            // {
-
-            // }
         }
     }
 
